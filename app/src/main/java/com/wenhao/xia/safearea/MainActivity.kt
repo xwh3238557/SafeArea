@@ -5,6 +5,8 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,7 +27,10 @@ class MainActivity : AppCompatActivity() {
                     window.decorView.systemUiVisibility
         }
 
-        window.decorView.systemUiVisibility = 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION )
+        }
 
         setContentView(R.layout.activity_main)
     }

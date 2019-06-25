@@ -2,10 +2,13 @@ package com.wenhao.xia.safearea
 
 import android.content.Context
 import android.graphics.Rect
+import android.os.Build
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 
 class SafeArea
 @JvmOverloads
@@ -15,46 +18,42 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     var edge: Edge = Edge.TOP
         set(value) {
             field = value
-            refreshLayoutParams()
+            requestLayout()
         }
 
     private var insetRect: Rect? = null
         set(value) {
             field = value
-            if (field != null) refreshLayoutParams()
+            requestLayout()
         }
 
-    private fun refreshLayoutParams() {
-        if (isInEditMode) return
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val h: Int
+        val w: Int
 
-        val width: Int
-        val height: Int
         when (edge) {
-            Edge.TOP -> {
-                width = ViewGroup.LayoutParams.MATCH_PARENT
-                height = insetRect?.top ?: 0
+            Edge.BOTTOM -> {
+                w = widthMeasureSpec
+                h = MeasureSpec.makeMeasureSpec(insetRect?.bottom ?: 0, MeasureSpec.EXACTLY)
             }
 
-            Edge.BOTTOM -> {
-                width = ViewGroup.LayoutParams.MATCH_PARENT
-                height = insetRect?.bottom ?: 0
+            Edge.TOP -> {
+                w = widthMeasureSpec
+                h = MeasureSpec.makeMeasureSpec(insetRect?.top ?: 0, MeasureSpec.EXACTLY)
             }
 
             Edge.LEFT -> {
-                height = insetRect?.left ?: 0
-                width = ViewGroup.LayoutParams.MATCH_PARENT
+                w = MeasureSpec.makeMeasureSpec(insetRect?.left ?: 0, MeasureSpec.EXACTLY)
+                h = heightMeasureSpec
             }
 
             Edge.RIGHT -> {
-                height = insetRect?.right ?: 0
-                width = ViewGroup.LayoutParams.MATCH_PARENT
+                w = MeasureSpec.makeMeasureSpec(insetRect?.right ?: 0, MeasureSpec.EXACTLY)
+                h = heightMeasureSpec
             }
         }
 
-        layoutParams = layoutParams?.apply {
-            this.height = height
-            this.width = width
-        } ?: ViewGroup.LayoutParams(width, height);
+        setMeasuredDimension(w, h)
     }
 
     init {
@@ -64,60 +63,75 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 
         setWillNotDraw(true)
 
-        if (isInEditMode) {
-            layoutParams = when (edge) {
-                Edge.TOP, Edge.BOTTOM -> {
-                    ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-                }
-                Edge.LEFT, Edge.RIGHT -> {
-                    ViewGroup.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
-                }
-            }
-        } else {
-            ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
-                this.insetRect = Rect(
-                    windowInsets.systemWindowInsetLeft,
-                    windowInsets.systemWindowInsetTop,
-                    windowInsets.systemWindowInsetRight,
-                    windowInsets.systemWindowInsetBottom
-                )
-
-                when (edge) {
-                    Edge.TOP -> {
-                        windowInsets.systemWindowInsetLeft
-                        windowInsets.replaceSystemWindowInsets(
-                            windowInsets.systemWindowInsetLeft,
-                            0,
-                            windowInsets.systemWindowInsetRight,
-                            windowInsets.systemWindowInsetBottom
-                        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (isInEditMode) {
+                layoutParams = when (edge) {
+                    Edge.TOP, Edge.BOTTOM -> {
+                        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
                     }
-
-                    Edge.BOTTOM ->
-                        windowInsets.replaceSystemWindowInsets(
-                            windowInsets.systemWindowInsetLeft,
-                            windowInsets.systemWindowInsetTop,
-                            windowInsets.systemWindowInsetRight,
-                            0
-                        )
-                    Edge.LEFT ->
-                        windowInsets.replaceSystemWindowInsets(
-                            0,
-                            windowInsets.systemWindowInsetTop,
-                            windowInsets.systemWindowInsetRight,
-                            windowInsets.systemWindowInsetBottom
-                        )
-                    Edge.RIGHT ->
-                        windowInsets.replaceSystemWindowInsets(
-                            windowInsets.systemWindowInsetLeft,
-                            windowInsets.systemWindowInsetTop,
-                            0,
-                            windowInsets.systemWindowInsetBottom
-                        )
+                    Edge.LEFT, Edge.RIGHT -> {
+                        ViewGroup.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
+                    }
                 }
-                windowInsets
+            } else {
+                ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
+                    this.insetRect = Rect(
+                        windowInsets.systemWindowInsetLeft,
+                        windowInsets.systemWindowInsetTop,
+                        windowInsets.systemWindowInsetRight,
+                        windowInsets.systemWindowInsetBottom
+                    )
+
+                    when (edge) {
+                        Edge.TOP -> {
+                            windowInsets.systemWindowInsetLeft
+                            windowInsets.replaceSystemWindowInsets(
+                                windowInsets.systemWindowInsetLeft,
+                                0,
+                                windowInsets.systemWindowInsetRight,
+                                windowInsets.systemWindowInsetBottom
+                            )
+                        }
+
+                        Edge.BOTTOM ->
+                            windowInsets.replaceSystemWindowInsets(
+                                windowInsets.systemWindowInsetLeft,
+                                windowInsets.systemWindowInsetTop,
+                                windowInsets.systemWindowInsetRight,
+                                0
+                            )
+                        Edge.LEFT ->
+                            windowInsets.replaceSystemWindowInsets(
+                                0,
+                                windowInsets.systemWindowInsetTop,
+                                windowInsets.systemWindowInsetRight,
+                                windowInsets.systemWindowInsetBottom
+                            )
+                        Edge.RIGHT ->
+                            windowInsets.replaceSystemWindowInsets(
+                                windowInsets.systemWindowInsetLeft,
+                                windowInsets.systemWindowInsetTop,
+                                0,
+                                windowInsets.systemWindowInsetBottom
+                            )
+                    }
+                    windowInsets
+                }
             }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            val statusBarHeightIdentifier = context.resources.getIdentifier(
+                "status_bar_height", "dimen", "android"
+            )
+            val navigationBarHeightIdentifier = context.resources.getIdentifier(
+                "navigation_bar_height", "dimen", "android"
+            )
+            val inset = Rect()
+            inset.top = context.resources.getDimensionPixelSize(statusBarHeightIdentifier)
+            inset.bottom = context.resources.getDimensionPixelSize(navigationBarHeightIdentifier)
+
+            insetRect = inset
         }
+
     }
 
     companion object {
