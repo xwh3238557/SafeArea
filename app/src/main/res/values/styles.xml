@@ -1,0 +1,22 @@
+<resources>
+
+    <attr name="edgeDirection" format="enum">
+        <enum name="top" value="1"/>
+        <enum name="bottom" value="2"/>
+        <enum name="left" value="3"/>
+        <enum name="right" value="4"/>
+    </attr>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <declare-styleable name="SafeArea">
+        <attr name="edgeDirection" />
+    </declare-styleable>
+
+</resources>
