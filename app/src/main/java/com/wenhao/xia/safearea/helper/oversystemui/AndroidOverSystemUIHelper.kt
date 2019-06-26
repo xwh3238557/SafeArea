@@ -2,9 +2,9 @@ package com.wenhao.xia.safearea.helper.oversystemui
 
 import android.graphics.Color
 import android.os.Build
-import android.support.annotation.RequiresApi
 import android.view.View
 import android.view.Window
+import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class AndroidOverSystemUIHelper : OverSystemUIHelper {

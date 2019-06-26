@@ -1,16 +1,12 @@
 package com.wenhao.xia.safearea.helper.oversystemui
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
-import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
-import android.support.annotation.RequiresApi
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.Window
-import java.lang.IllegalStateException
-import java.lang.RuntimeException
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 
 interface OverSystemUIHelper {
     fun setOverStatusBar(window: Window, over: Boolean)
