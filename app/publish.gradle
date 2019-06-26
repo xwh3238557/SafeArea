@@ -1,0 +1,64 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+version project.android.defaultConfig.versionName
+group 'cn.wenhao.xia'
+
+Properties localProperties() {
+    def localProperties = new Properties()
+    def ins = project.rootProject.file('local.properties').newInputStream()
+    localProperties.load(ins)
+    return localProperties
+}
+
+publishing {
+    publications {
+        Production(MavenPublication) {
+            artifact "$buildDir/outputs/aar/app-release.aar"
+            groupId
+            artifactId 'safearea'
+            version this.version
+
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                configurations.implementation.allDependencies.each {
+                    // Ensure dependencies such as fileTree are not included in the pom.
+                    if (it.name != 'unspecified') {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    def localProperties = localProperties()
+
+    user = localProperties.getProperty('jcenter.profile.username')
+    key = localProperties.getProperty('jcenter.profile.apiKey')
+
+    publications = ['Production']
+    configurations = ['archives']
+    override = true
+    pkg {
+        repo = 'maven_android'
+        name = 'safearea'
+        description = 'Android lib can provide a view to handle system view insets. (Such as: StatusBar, NavigationBar, etc)'
+        publish = true
+        publicDownloadNumbers = true
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/xwh3238557/SafeArea.git'
+        version {
+            name = this.version
+            desc = "Version ${this.version}"
+            released = new Date()
+            vcsTag = this.version
+        }
+    }
+}
