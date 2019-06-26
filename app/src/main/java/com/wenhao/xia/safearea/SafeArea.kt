@@ -3,17 +3,18 @@ package com.wenhao.xia.safearea
 import android.content.Context
 import android.graphics.Rect
 import android.os.Build
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import com.wenhao.xia.safearea.helper.inset.AppCompatInsetGetter
+import com.wenhao.xia.safearea.helper.inset.InsetGetter
 
 class SafeArea
 @JvmOverloads
 constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
     View(context, attrs, defStyleAttr) {
+    private val insetGetter by lazy {
+        AppCompatInsetGetter()
+    }
 
     var edge: Edge = Edge.TOP
         set(value) {
@@ -61,77 +62,19 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
         this.edge = getEdgeFromValue(typedArray.getInt(R.styleable.SafeArea_edgeDirection, Edge.TOP.value)) ?: Edge.TOP
         typedArray.recycle()
 
-        setWillNotDraw(true)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (isInEditMode) {
-                layoutParams = when (edge) {
-                    Edge.TOP, Edge.BOTTOM -> {
-                        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-                    }
-                    Edge.LEFT, Edge.RIGHT -> {
-                        ViewGroup.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
-                    }
-                }
-            } else {
-                ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
-                    this.insetRect = Rect(
-                        windowInsets.systemWindowInsetLeft,
-                        windowInsets.systemWindowInsetTop,
-                        windowInsets.systemWindowInsetRight,
-                        windowInsets.systemWindowInsetBottom
-                    )
-
-                    when (edge) {
-                        Edge.TOP -> {
-                            windowInsets.systemWindowInsetLeft
-                            windowInsets.replaceSystemWindowInsets(
-                                windowInsets.systemWindowInsetLeft,
-                                0,
-                                windowInsets.systemWindowInsetRight,
-                                windowInsets.systemWindowInsetBottom
-                            )
-                        }
-
-                        Edge.BOTTOM ->
-                            windowInsets.replaceSystemWindowInsets(
-                                windowInsets.systemWindowInsetLeft,
-                                windowInsets.systemWindowInsetTop,
-                                windowInsets.systemWindowInsetRight,
-                                0
-                            )
-                        Edge.LEFT ->
-                            windowInsets.replaceSystemWindowInsets(
-                                0,
-                                windowInsets.systemWindowInsetTop,
-                                windowInsets.systemWindowInsetRight,
-                                windowInsets.systemWindowInsetBottom
-                            )
-                        Edge.RIGHT ->
-                            windowInsets.replaceSystemWindowInsets(
-                                windowInsets.systemWindowInsetLeft,
-                                windowInsets.systemWindowInsetTop,
-                                0,
-                                windowInsets.systemWindowInsetBottom
-                            )
-                    }
-                    windowInsets
-                }
+        getWindowInsets(object : InsetGetter.OnInsetGetListener {
+            override fun onInsetChange(insetRect: Rect) {
+                this@SafeArea.insetRect = insetRect
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            val statusBarHeightIdentifier = context.resources.getIdentifier(
-                "status_bar_height", "dimen", "android"
-            )
-            val navigationBarHeightIdentifier = context.resources.getIdentifier(
-                "navigation_bar_height", "dimen", "android"
-            )
-            val inset = Rect()
-            inset.top = context.resources.getDimensionPixelSize(statusBarHeightIdentifier)
-            inset.bottom = context.resources.getDimensionPixelSize(navigationBarHeightIdentifier)
+        })
+    }
 
-            insetRect = inset
+    private fun getWindowInsets(listener: InsetGetter.OnInsetGetListener) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) { //we can only draw views under system uis from kitkat
+            insetGetter.getWindowInsets(this, listener)
+        } else {
+            listener.onInsetChange(Rect(0, 0, 0, 0))
         }
-
     }
 
     companion object {

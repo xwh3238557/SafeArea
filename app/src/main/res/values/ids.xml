@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="safeAreaTop" type="id"/>
+    <item name="safeAreaLeft" type="id"/>
+    <item name="safeAreaRight" type="id"/>
+    <item name="safeAreaBottom" type="id"/>
+</resources>
