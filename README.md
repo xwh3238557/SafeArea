@@ -16,23 +16,23 @@ Example:
 
 In activity:
 
-class MainActivity : AppCompatActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        class MainActivity : AppCompatActivity() {
+          override fun onCreate(savedInstanceState: Bundle?) {
+                super.onCreate(savedInstanceState)
 
-        val overSystemUIHelper = AppCompatOverSystemUIHelper()
-        overSystemUIHelper.setOverSystemUi(window, true)
+                val overSystemUIHelper = AppCompatOverSystemUIHelper()
+                overSystemUIHelper.setOverSystemUi(window, true)
 
-        overSystemUIHelper.setStatusBarBackgroundColor(window, Color.YELLOW)
-        overSystemUIHelper.setNavigationBarBackgroundColor(window, Color.DKGRAY)
+                overSystemUIHelper.setStatusBarBackgroundColor(window, Color.YELLOW)
+                overSystemUIHelper.setNavigationBarBackgroundColor(window, Color.DKGRAY)
 
-        setContentView(R.layout.activity_main)
-   }
-}
+                setContentView(R.layout.activity_main)
+           }
+        }
 
 In layout:
 
-<android.support.constraint.ConstraintLayout
+    <android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -40,8 +40,8 @@ In layout:
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
         tools:context=".MainActivity">
-
-    <com.wenhao.xia.safearea.SafeArea
+        
+        <com.wenhao.xia.safearea.SafeArea
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:edgeDirection="top"
@@ -50,7 +50,7 @@ In layout:
             app:layout_constraintTop_toTopOf="parent"
             android:id="@id/safeAreaTop"/>
 
-    <TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hello World!"
@@ -58,7 +58,7 @@ In layout:
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/safeAreaTop"/>
 
-    <TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@id/safeAreaBottom"
@@ -66,7 +66,7 @@ In layout:
             app:layout_constraintEnd_toEndOf="@id/safeAreaBottom"
             app:layout_constraintStart_toStartOf="@id/safeAreaBottom"/>
 
-    <com.wenhao.xia.safearea.SafeArea
+        <com.wenhao.xia.safearea.SafeArea
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:edgeDirection="bottom"
@@ -75,10 +75,10 @@ In layout:
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"/>
-</android.support.constraint.ConstraintLayout>
 
-I recommand that you use the ids i use {safeAreaBottom, safeAreaTop, safeAreaLeft, safeAreaRight} to SafeArea's id.
-Because in kitkat, the background color we use. is just directly set to SafeArea. So if you use the Id I provide.You don't need to do any thing else.But there is a other way to provide the SafeArea by your self,you just need to set the TranslucentSystemUIHelper's safeAreaProvider. 
+      </android.support.constraint.ConstraintLayout>
+
+I recommand that you use the ids that i created in xml {safeAreaBottom, safeAreaTop, safeAreaLeft, safeAreaRight} to SafeArea's id. Because in kitkat, the background color we use. is just directly set to SafeArea. So if you use the Id I provide. You don't need to do any thing else. But there still an another way to provide the SafeArea by your self, you just need to set the TranslucentSystemUIHelper's safeAreaProvider. 
 
 Example:
 
