@@ -1,8 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-
-apply from: './publish.gradle'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 28
@@ -21,6 +20,15 @@ android {
     }
 }
 
+ext {
+    dokkaOutputDir = "$buildDir/javaDoc/"
+}
+
+dokka {
+    outputFormat = 'javadoc'
+    outputDirectory = dokkaOutputDir
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -32,3 +40,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
+apply from: './publish.gradle'

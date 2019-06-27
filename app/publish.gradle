@@ -1,7 +1,7 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
-version project.android.defaultConfig.versionName
+version String.valueOf(project.android.defaultConfig.versionName)
 group 'cn.wenhao.xia'
 
 Properties localProperties() {
@@ -11,10 +11,24 @@ Properties localProperties() {
     return localProperties
 }
 
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javaDocJar(type: Jar, dependsOn: dokka) {
+    from dokkaOutputDir
+    classifier = 'javaDoc'
+}
+
 publishing {
     publications {
         Production(MavenPublication) {
-            artifact "$buildDir/outputs/aar/app-release.aar"
+            artifacts {
+                "$buildDir/outputs/aar/app-release.aar"
+                archives javaDocJar
+                archives sourcesJar
+            }
             groupId
             artifactId 'safearea'
             version this.version
