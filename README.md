@@ -1,4 +1,7 @@
 # SafeArea
+
+[ ![Download](https://api.bintray.com/packages/xwh443517937/maven_android/safearea/images/download.svg?version=0.0.1) ](https://bintray.com/xwh443517937/maven_android/safearea/0.0.1/link)
+
 Android lib can provide a view to handle system view insets(Such as: StatusBar, NavigationBar, etc).You can also use it to makeyour layout under system bar,And change the System UI's background color.
 
 This lib can make it easier to manage the System ui insets on android.It just like SafeArea on IOS.
@@ -11,6 +14,11 @@ KitKat: Top is always equal to the status bar height, Bottom is alwats equal to 
         It's always 0 on both LEFT and Right Edge.
         
 After Kitkat: It can fit the right inset size, on all four direction. 
+
+Gradle: 
+
+        implementation 'cn.wenhao.xia:safearea:0.0.1'
+
 
 Example:
 
@@ -84,9 +92,9 @@ Example:
 
 1.You need to optional cast your helper to TranslucentSystemUIHelper:
 
-val overSystemUIHelper = AppCompatOverSystemUIHelper() as? TranslucentSystemUIHelper
+        val overSystemUIHelper = AppCompatOverSystemUIHelper() as? TranslucentSystemUIHelper
 
 2.The set the provider:
 
-overSystemUIHelper?.safeAreaProvider = object : SafeAreaProvider {...}
+        overSystemUIHelper?.safeAreaProvider = object : SafeAreaProvider {...}
 
